@@ -1,0 +1,178 @@
+Author: Abhipsa Kumari Priysdarshinee
+THE SPARK FOUNDATION INTERNSHIP
+
+GRIPMAY21
+
+Task1: Prediction using Supervised ML
+
+Problem Statement: Predict the percentage of an student based on the no of study hours.
+
+I will be performing the following steps:-
+
+Data reading and understanding
+Exploratory Data Analysis
+Building a Simple Regression Model
+Model Evaluation and Prediction
+Simple Linear Regression
+In this regression task we will predict the percentage of marks that a student is expected to score based upon the number of hours they studied. This is a simple linear regression task as it involves just two variables.
+
+In [1]:
+# Importing all libraries required in this notebook
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+from sklearn import metrics
+%matplotlib inline
+In [2]:
+# Reading data from remote link
+
+s_data = pd.read_csv("http://bit.ly/w-data")
+print("Data imported successfully")
+
+s_data.head(25)
+Data imported successfully
+Out[2]:
+Hours	Scores
+0	2.5	21
+1	5.1	47
+2	3.2	27
+3	8.5	75
+4	3.5	30
+5	1.5	20
+6	9.2	88
+7	5.5	60
+8	8.3	81
+9	2.7	25
+10	7.7	85
+11	5.9	62
+12	4.5	41
+13	3.3	42
+14	1.1	17
+15	8.9	95
+16	2.5	30
+17	1.9	24
+18	6.1	67
+19	7.4	69
+20	2.7	30
+21	4.8	54
+22	3.8	35
+23	6.9	76
+24	7.8	86
+Checking if there are any NULL values
+
+In [3]:
+s_data.isnull == True
+Out[3]:
+False
+There are no NULL values in the Dataset so, plot the data points on 2-D graph and see if we can find any relationship between the data.
+
+Exploratory Data Analysis:
+Let's plot our data points on 2-D graph to eyeball our dataset and see if we can manually find any relationship between the data.
+
+In [4]:
+# Plotting the distribution of scores
+
+sns.set_style('darkgrid')
+sns.scatterplot(y = s_data['Scores'], x = s_data['Hours'])
+plt.title('Score vs Hours', size = 20)
+plt.xlabel('Hours Studied', size=15)
+plt.ylabel('Percentage Scores', size=15)
+plt.show()
+
+From the graph above, we can clearly see that there is a positive linear relation between the number of hours studied and percentage of score.
+
+Plotting Regression line:
+In [5]:
+sns.regplot(x = s_data['Hours'], y = s_data['Scores'])
+plt.title('Regression Line', size = 20)
+plt.xlabel('Hours Studied', size=15)
+plt.ylabel('Percentage Scores', size=15)
+plt.show()
+print(s_data.corr())
+
+           Hours    Scores
+Hours   1.000000  0.976191
+Scores  0.976191  1.000000
+Preparing the data:
+The next step is to divide the data into "attributes" (inputs) and "labels" (outputs).
+
+In [6]:
+X = s_data.iloc[:, :-1].values  
+y = s_data.iloc[:, 1].values
+Splitting the data:
+Now that we have our attributes and labels, the next step is to split this data into training and test sets.
+
+In [7]:
+#splitting our data into training and testing sets
+
+train_X, test_X, train_y, test_y = train_test_split(X, y, random_state = 0)
+Training the Algorithm:
+We have split our data into training and testing sets, and now is finally the time to train our algorithm.
+
+In [8]:
+regression = LinearRegression()
+regression.fit(train_X, train_y)
+
+print("Training Complete.")
+print("Model Trained.")
+Training Complete.
+Model Trained.
+Predicting the Percentage:
+Now that we have trained our algorithm, it's time to make some predictions.
+
+In [9]:
+pred_y = regression.predict(test_X)
+prediction = pd.DataFrame({'Hours': [i[0] for i in test_X], 'Predicted Marks': [k for k in pred_y]})
+prediction
+Out[9]:
+Hours	Predicted Marks
+0	1.5	16.844722
+1	3.2	33.745575
+2	7.4	75.500624
+3	2.5	26.786400
+4	5.9	60.588106
+5	3.8	39.710582
+6	1.9	20.821393
+Comparing the Actual and Predicted Marks:
+In [10]:
+# Comparing Actual vs Predicted
+
+df = pd.DataFrame({'Actual': test_y, 'Predicted' : pred_y})
+df
+Out[10]:
+Actual	Predicted
+0	20	16.844722
+1	27	33.745575
+2	69	75.500624
+3	30	26.786400
+4	62	60.588106
+5	35	39.710582
+6	24	20.821393
+Plotting Actual and Predicted Marks:
+In [11]:
+plt.scatter(x=test_X, y=test_y, color='Red')
+plt.plot(test_X, pred_y, color='Black')
+plt.title('Actual vs Predicted', size=20)
+plt.ylabel('Marks Percentage', size=12)
+plt.xlabel('Hours Studied', size=12)
+plt.show()
+
+Predicting the score if studied for 9.25 hours/day:
+In [12]:
+hours = [9.25]
+answer = regression.predict([hours])
+print("Score = {}".format(round(answer[0],3)))
+Score = 93.893
+According to linear regression model, predicted score if a student studies for 9.25 hrs/ day is 93.893
+Evaluating the model:
+The final step is to evaluate the performance of algorithm using mean square error.
+
+In [13]:
+#mean absolute error to evaluate performance of the algorithm
+print('Mean Absolute Error:', metrics.mean_absolute_error(test_y, pred_y))
+Mean Absolute Error: 4.130879918502486
